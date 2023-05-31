@@ -32,11 +32,20 @@ const getPartyById = async (id) => {
 
 // delete party
 const deleteParty = async (id) => {
+  try {
+    const response = await fetch(`${PARTIES_API_URL}/${id}`, {
+      method: 'DELETE',
+    });
+    const party = await response.json();
+    return party
+  } catch (error) {
+    console.log(error);}
   // your code here
 };
 
 // render a single party by id
 const renderSinglePartyById = async (id) => {
+ 
   try {
     // fetch party details from server
     const party = await getPartyById(id);
@@ -57,11 +66,10 @@ const renderSinglePartyById = async (id) => {
     const partyDetailsElement = document.createElement('div');
     partyDetailsElement.classList.add('party-details');
     partyDetailsElement.innerHTML = `
-            <h2>${party.title}</h2>
-            <p>${party.event}</p>
-            <p>${party.city}</p>
-            <p>${party.state}</p>
-            <p>${party.country}</p>
+             <p>${party.description}</p>
+                <p>${party.date}</p>
+                <p>${party.time}</p>
+                <p>${party.location}</p>
             <h3>Guests:</h3>
             <ul>
             ${guests
@@ -113,12 +121,16 @@ const renderParties = async (parties) => {
       // see details
       const detailsButton = partyElement.querySelector('.details-button');
       detailsButton.addEventListener('click', async (event) => {
+      
+      await renderSinglePartyById (party.id)
         // your code here
       });
 
       // delete party
       const deleteButton = partyElement.querySelector('.delete-button');
       deleteButton.addEventListener('click', async (event) => {
+        deleteParty(party.id)
+        
         // your code here
       });
     });
@@ -129,7 +141,10 @@ const renderParties = async (parties) => {
 
 // init function
 const init = async () => {
+
   // your code here
+  const partiesFromApi = await getAllParties()
+  await renderParties(partiesFromApi)
 };
 
 init();
